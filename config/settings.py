@@ -40,7 +40,14 @@ INSTALLED_APPS = [
     'accounts',
     'events',
 ]
+AUTH_USER_MODEL = "accounts.Utilisateur"
 
+LOGIN_URL = "accounts:connexion"
+LOGIN_REDIRECT_URL = "evenements:liste"
+LOGOUT_REDIRECT_URL = "evenements:liste"
+
+LANGUAGE_CODE = "fr-fr"
+TIME_ZONE = "Indian/Antananarivo"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

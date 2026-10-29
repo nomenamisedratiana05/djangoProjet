@@ -1,0 +1,20 @@
+# Environnement virtuel
+env/
+venv/
+
+# Base de données locale
+db.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+
+# Éditeur / système
+.vscode/
+.idea/
+.DS_Store
+
+# Fichiers générés
+staticfiles/
+media/
+.env
