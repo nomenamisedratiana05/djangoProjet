@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Événements – EventHub{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Événements à venir</h1>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-5">{{ form.q }}</div>
+    <div class="col-md-4">{{ form.categorie }}</div>
+    <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-grow-1">Filtrer</button>
+        <a href="{% url 'evenements:liste' %}" class="btn btn-outline-secondary">Réinitialiser</a>
+    </div>
+</form>
+
+{% if evenements %}
+<div class="row g-3">
+    {% for evenement in evenements %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <span class="badge bg-secondary align-self-start mb-2">
+                    {{ evenement.categorie.nom }}
+                </span>
+                <h2 class="h5 card-title">{{ evenement.titre }}</h2>
+                <p class="text-muted small mb-2">
+                    {{ evenement.date|date:"d/m/Y à H:i" }}<br>
+                    {{ evenement.lieu }}
+                </p>
+                <p class="card-text">{{ evenement.description|truncatewords:20 }}</p>
+
+                <div class="mt-auto d-flex justify-content-between align-items-center">
+                    {% if evenement.est_complet %}
+                        <span class="badge bg-danger">Complet</span>
+                    {% else %}
+                        <span class="badge bg-success">
+                            {{ evenement.places_restantes }} place{{ evenement.places_restantes|pluralize }}
+                        </span>
+                    {% endif %}
+                    <a href="{% url 'evenements:detail' evenement.pk %}"
+                       class="btn btn-outline-primary btn-sm">Voir le détail</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<nav class="mt-4" aria-label="Pagination">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link"
+               href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">Précédent</a>
+        </li>
+        {% endif %}
+        <li class="page-item disabled">
+            <span class="page-link">Page {{ page_obj.number }} / {{ paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+               href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}">Suivant</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+    <div class="alert alert-info">Aucun événement ne correspond à votre recherche.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ evenement.titre }} – EventHub{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'evenements:liste' %}">Événements</a></li>
+        <li class="breadcrumb-item active">{{ evenement.titre }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <span class="badge bg-secondary mb-2">{{ evenement.categorie.nom }}</span>
+        <h1 class="h2">{{ evenement.titre }}</h1>
+        <p class="lead text-muted">
+            {{ evenement.date|date:"l d F Y à H:i" }} · {{ evenement.lieu }}
+        </p>
+        <p style="white-space: pre-line;">{{ evenement.description }}</p>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <p class="mb-1"><strong>Capacité :</strong> {{ evenement.capacite }}</p>
+                <p class="mb-1"><strong>Inscrits :</strong> {{ evenement.nombre_inscrits }}</p>
+                <p class="mb-3"><strong>Places restantes :</strong> {{ evenement.places_restantes }}</p>
+
+                {% if not evenement.est_a_venir %}
+                    <div class="alert alert-secondary mb-0">Cet événement est terminé.</div>
+
+                {% elif inscription and inscription.est_confirmee %}
+                    <div class="alert alert-success">Vous êtes inscrit à cet événement.</div>
+                    <a href="{% url 'evenements:annuler' inscription.pk %}"
+                       class="btn btn-outline-danger w-100">Annuler mon inscription</a>
+
+                {% elif evenement.est_complet %}
+                    <div class="alert alert-danger mb-0">Complet</div>
+
+                {% elif user.is_authenticated %}
+                    <form method="post" action="{% url 'evenements:inscrire' evenement.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                    </form>
+
+                {% else %}
+                    <a href="{% url 'accounts:connexion' %}?next={{ request.path }}"
+                       class="btn btn-primary w-100">Se connecter pour s'inscrire</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if user.is_authenticated and user.est_gestionnaire %}
+<div class="d-grid gap-2 mt-3">
+    <a href="{% url 'evenements:modifier' evenement.pk %}" class="btn btn-outline-secondary">Modifier l'événement</a>
+    <a href="{% url 'evenements:inscrits' evenement.pk %}" class="btn btn-outline-primary">Voir les inscrits</a>
+</div>
+{% endif %}
+</div>
+{% endblock %}

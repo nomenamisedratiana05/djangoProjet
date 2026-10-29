@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Accès refusé – EventHub{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="h3">Accès refusé</h1>
+    <p class="text-muted">Vous n'avez pas le droit d'accéder à cette page.</p>
+    <a href="{% url 'evenements:liste' %}" class="btn btn-primary">Retour aux événements</a>
+</div>
+{% endblock %}

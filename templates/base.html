@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}EventHub{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">EventHub</a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+    <ul class="navbar-nav me-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'evenements:liste' %}">Événements</a>
+    </li>
+    {% if user.is_authenticated %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'evenements:mes_inscriptions' %}">Mes inscriptions</a>
+    </li>
+    {% endif %}
+
+    {% if user.is_authenticated and user.est_gestionnaire %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'evenements:tableau_de_bord' %}">Tableau de bord</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'evenements:gestion_liste' %}">Gérer les événements</a>
+</li>
+{% endif %}
+</ul>
+
+    <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li class="nav-item d-flex align-items-center text-light me-3">
+            {{ user }}
+            {% if user.est_gestionnaire %}
+                <span class="badge bg-warning text-dark ms-2">Gestionnaire</span>
+            {% endif %}
+        </li>
+        <li class="nav-item">
+            <form method="post" action="{% url 'accounts:deconnexion' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light btn-sm">Déconnexion</button>
+            </form>
+        </li>
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:connexion' %}">Connexion</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:inscription' %}">Créer un compte</a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+    </div>
+</nav>
+
+<main class="container my-4 flex-grow-1">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="bg-light text-center py-3 border-top">
+    <small class="text-muted">EventHub – Université de Vakinankaratra</small>
+</footer>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

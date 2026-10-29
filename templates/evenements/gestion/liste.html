@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des événements – EventHub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Gestion des événements</h1>
+    <a href="{% url 'evenements:creer' %}" class="btn btn-primary">Créer un événement</a>
+</div>
+
+{% if evenements %}
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Catégorie</th>
+                <th>Inscrits</th>
+                <th>État</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evenement in evenements %}
+            <tr>
+                <td><a href="{% url 'evenements:detail' evenement.pk %}">{{ evenement.titre }}</a></td>
+                <td>{{ evenement.date|date:"d/m/Y H:i" }}</td>
+                <td>{{ evenement.categorie.nom }}</td>
+                <td>{{ evenement.nombre_inscrits }} / {{ evenement.capacite }}</td>
+                <td>
+                    {% if evenement.est_a_venir %}
+                        <span class="badge bg-success">À venir</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Terminé</span>
+                    {% endif %}
+                </td>
+                <td class="text-end text-nowrap">
+                    <a href="{% url 'evenements:inscrits' evenement.pk %}" class="btn btn-outline-primary btn-sm">Inscrits</a>
+                    <a href="{% url 'evenements:modifier' evenement.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+                    {% if evenement.peut_etre_supprime %}
+                        <a href="{% url 'evenements:supprimer' evenement.pk %}" class="btn btn-outline-danger btn-sm">Supprimer</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if is_paginated %}
+<nav aria-label="Pagination">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédent</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} / {{ paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivant</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info">Aucun événement pour le moment.</div>
+{% endif %}
+{% endblock %}

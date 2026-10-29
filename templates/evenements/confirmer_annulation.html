@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Annuler l'inscription – EventHub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-3">Annuler votre inscription ?</h1>
+                <p>
+                    Vous êtes sur le point d'annuler votre inscription à
+                    <strong>{{ inscription.evenement.titre }}</strong>
+                    ({{ inscription.evenement.date|date:"d/m/Y à H:i" }}).
+                </p>
+                <p class="text-muted small">Votre place sera libérée pour les autres participants.</p>
+
+                <form method="post" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Oui, annuler</button>
+                    <a href="{% url 'evenements:mes_inscriptions' %}" class="btn btn-outline-secondary">Non, retour</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

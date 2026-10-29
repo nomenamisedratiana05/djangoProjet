@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Inscrits – {{ evenement.titre }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'evenements:gestion_liste' %}">Gestion</a></li>
+        <li class="breadcrumb-item active">{{ evenement.titre }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">Inscrits : {{ evenement.titre }}</h1>
+        <p class="text-muted mb-0">{{ evenement.date|date:"d/m/Y à H:i" }} · {{ evenement.lieu }}</p>
+    </div>
+    <a href="{% url 'evenements:export_inscrits' evenement.pk %}" class="btn btn-outline-success">Exporter en CSV</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-4">
+        <div class="card text-center"><div class="card-body">
+            <div class="h3 mb-0">{{ evenement.nombre_inscrits }} / {{ evenement.capacite }}</div>
+            <small class="text-muted">Inscriptions confirmées</small>
+        </div></div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card text-center"><div class="card-body">
+            <div class="h3 mb-0">{{ evenement.places_restantes }}</div>
+            <small class="text-muted">Places restantes</small>
+        </div></div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card text-center"><div class="card-body">
+            <div class="h3 mb-0">{{ nb_annulees }}</div>
+            <small class="text-muted">Inscriptions annulées</small>
+        </div></div>
+    </div>
+</div>
+
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item"><a class="nav-link {% if not statut %}active{% endif %}" href="?">Toutes</a></li>
+    <li class="nav-item"><a class="nav-link {% if statut == 'confirmed' %}active{% endif %}" href="?statut=confirmed">Confirmées</a></li>
+    <li class="nav-item"><a class="nav-link {% if statut == 'cancelled' %}active{% endif %}" href="?statut=cancelled">Annulées</a></li>
+</ul>
+
+{% if inscriptions %}
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Participant</th>
+                <th>E-mail</th>
+                <th>Statut</th>
+                <th>Inscrit le</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inscription in inscriptions %}
+            <tr>
+                <td>{{ inscription.participant }}</td>
+                <td>{{ inscription.participant.email }}</td>
+                <td>
+                    {% if inscription.est_confirmee %}
+                        <span class="badge bg-success">{{ inscription.get_statut_display }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ inscription.get_statut_display }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ inscription.date_creation|date:"d/m/Y H:i" }}</td>
+                <td class="text-end">
+                    {% if inscription.est_annulable %}
+                        <a href="{% url 'evenements:annuler_inscrit' inscription.pk %}"
+                           class="btn btn-outline-danger btn-sm">Annuler</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">Aucune inscription{% if statut %} pour ce filtre{% endif %}.</div>
+{% endif %}
+{% endblock %}

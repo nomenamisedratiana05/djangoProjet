@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord – EventHub{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Tableau de bord</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-center"><div class="card-body">
+            <div class="h2 mb-0">{{ nb_evenements }}</div>
+            <small class="text-muted">Événements au total</small>
+        </div></div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-center"><div class="card-body">
+            <div class="h2 mb-0">{{ nb_a_venir }}</div>
+            <small class="text-muted">Événements à venir</small>
+        </div></div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-center"><div class="card-body">
+            <div class="h2 mb-0">{{ nb_inscriptions_confirmees }}</div>
+            <small class="text-muted">Inscriptions confirmées</small>
+        </div></div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-center"><div class="card-body">
+            <div class="h2 mb-0">{{ taux_global }} %</div>
+            <small class="text-muted">Remplissage (événements à venir)</small>
+        </div></div>
+    </div>
+</div>
+
+<h2 class="h5 mb-3">Remplissage des événements à venir</h2>
+{% if evenements %}
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr><th>Événement</th><th>Date</th><th>Inscrits</th><th style="width: 30%;">Remplissage</th></tr>
+        </thead>
+        <tbody>
+            {% for evenement in evenements %}
+            <tr>
+                <td><a href="{% url 'evenements:inscrits' evenement.pk %}">{{ evenement.titre }}</a></td>
+                <td>{{ evenement.date|date:"d/m/Y H:i" }}</td>
+                <td>{{ evenement.nombre_inscrits }} / {{ evenement.capacite }}</td>
+                <td>
+                    <div class="progress" role="progressbar"
+                         aria-valuenow="{{ evenement.taux_remplissage }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" >
+                            {{ evenement.taux_remplissage }} %
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">Aucun événement à venir.</div>
+{% endif %}
+{% endblock %}

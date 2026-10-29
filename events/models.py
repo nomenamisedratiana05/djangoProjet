@@ -34,12 +34,13 @@ class EvenementQuerySet(models.QuerySet):
         return self.filter(date__gt=timezone.now())
 
     def avec_stats(self):
-        """Ajoute nb_inscrits en une seule requête SQL."""
+
         return self.annotate(
             nb_inscrits=Count(
                 "inscriptions",
                 filter=Q(inscriptions__statut="confirmed"),
-            )
+            ),
+            nb_inscriptions_total=Count("inscriptions"),
         )
 
     def recherche(self, terme=None, categorie_id=None):
@@ -103,6 +104,16 @@ class Evenement(HorodatageModel):
     @property
     def est_complet(self):
         return self.places_restantes == 0
+
+    @property
+    def taux_remplissage(self):
+        return min(100, round(100 * self.nombre_inscrits / self.capacite))
+
+    @property
+    def peut_etre_supprime(self):
+        if hasattr(self, "nb_inscriptions_total"):
+            return self.nb_inscriptions_total == 0
+        return not self.inscriptions.exists()
 
     def peut_recevoir_inscription(self):
         return self.est_a_venir and not self.est_complet

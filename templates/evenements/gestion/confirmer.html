@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titre }} – EventHub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-3">{{ titre }}</h1>
+                <p>{{ message }}</p>
+
+                <form method="post" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">{{ bouton }}</button>
+                    <a href="{{ retour_url }}" class="btn btn-outline-secondary">Retour</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

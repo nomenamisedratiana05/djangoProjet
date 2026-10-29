@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titre_page }} – EventHub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-4">{{ titre_page }}</h1>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    {% for champ in form %}
+                        <div class="mb-3">
+                            <label for="{{ champ.id_for_label }}" class="form-label">{{ champ.label }}</label>
+                            {{ champ }}
+                            {% for erreur in champ.errors %}
+                                <div class="text-danger small">{{ erreur }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <a href="{% url 'evenements:gestion_liste' %}" class="btn btn-outline-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
